@@ -1,14 +1,23 @@
 # tmux cheatsheet
 
 # tmux and vim config
-If you install [install gpakosz tmux configuration](https://github.com/gpakosz/.tmux#enabling-the-powerline-look), and want to enable vim copy
-please two commands to .tmux.config
+If you has installed [gpakosz tmux configuration](https://github.com/gpakosz/.tmux#enabling-the-powerline-look), and want to enable vim copy
+please two commands to `~/.tmux.conf.local`
 
+## gpakosz tmux configuration install
+```
+$ cd
+$ git clone https://github.com/gpakosz/.tmux.git
+$ ln -s -f .tmux/.tmux.conf
+$ cp .tmux/.tmux.conf.local .
+```
+## tmux setting to enable vim
 ```console
 set -g status-keys vi
 set -g mode-keys vi
 ```
-<ctrl> + b, and 'r' to reload configuration
+`<prefix>` means you have to either hit <kbd>Ctrl</kbd> + <kbd>a</kbd> or <kbd>Ctrl</kbd> + <kbd>b</kbd>
+Using `<prefix> r`, to reload configuration
 
 # tmux Basics
 1. start new:
@@ -20,7 +29,8 @@ set -g mode-keys vi
 2. start new with session name:
 
     ```console
-    $ tmux new -s myname
+    $ tmux new -s my-session-name
+    $ :new -s my-session-name
     ```
 
 3. attach to named:
@@ -34,12 +44,18 @@ set -g mode-keys vi
     ```console
     $ tmux ls
     ```
-5. kill session:
+5. kill myname session:
 
     ```console
     $ tmux kill-session -t myname
+    $ tmux kill-session -a # kill all sessions but the current
+    $ tmux kill-session -a -t myname # kill all sessions buti *myname*
     ```
-
+6. attach to last session
+    ```
+    $ tmux a
+    $ tmux a -t mysession # attach to last session
+    ```
 In tmux, hit the prefix `ctrl+b` and then:
 Features comes from [install gpakosz tmux configuration](https://github.com/gpakosz/.tmux#enabling-the-powerline-look) will be noted as (#)
 
@@ -51,15 +67,15 @@ Features comes from [install gpakosz tmux configuration](https://github.com/gpak
 
 ## Windows (tabs)
 
-    `c`         new window
-    ,           name window
-    w           list windows
-    f           find window
-    &           kill window
-    -          splits the current windows vertically (#)
-    _           splits the current 
-    .           move window - prompted for a new number
-    :movew<CR>  move window to the next unused number
+    - `c`         new window
+    - ,           name window
+    - w           list windows
+    - f           find window
+    - &           kill window
+    - `-`          splits the current windows vertically (#)
+    - _           splits the current 
+    - .           move window - prompted for a new number
+    - :movew<CR>  move window to the next unused number
     - `<prefix> C-h` and `<prefix> C-l` let you navigate windows (default
     - `<prefix> Tab` brings you to the last active window
 
