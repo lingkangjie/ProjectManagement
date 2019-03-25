@@ -67,17 +67,20 @@ Features comes from [install gpakosz tmux configuration](https://github.com/gpak
 
 ## Windows (tabs)
 
-    - `c`         new window
-    - ,           name window
-    - w           list windows
-    - f           find window
-    - &           kill window
-    - `-`          splits the current windows vertically (#)
-    - _           splits the current 
-    - .           move window - prompted for a new number
-    - :movew<CR>  move window to the next unused number
-    - `<prefix> C-h` and `<prefix> C-l` let you navigate windows (default
-    - `<prefix> Tab` brings you to the last active window
+    c           new window
+    ,           name window
+    w           list windows
+    p           previous window
+    n           next window
+    f           find window
+    0,1,...,9   switch window by number
+    &           close current window
+    -           splits the current windows vertically (#)
+    _           splits the current 
+    .           move window - prompted for a new number
+    :movew<CR>  move window to the next unused number
+    `<prefix> C-h` and `<prefix> C-l` let you navigate windows (default
+    `<prefix> Tab` brings you to the last active window
 
 ## Panes (splits)
 
@@ -90,6 +93,21 @@ Features comes from [install gpakosz tmux configuration](https://github.com/gpak
     h, j, k, l goes to left, bottom, up, and right pane
     H, J, K, L move pane left, bottom, up and right a bit
     ⍽  space - toggle between layouts
+## copy mode
+
+    - `<prefix> Enter` enters copy-mode
+    - `<prefix> b` lists the paste-buffers
+    - `<prefix> p` pastes from the top paste-buffer
+    - `<prefix> P` lets you choose the paste-buffer to paste from
+
+    Bindings for `copy-mode-vi`:
+
+    - `v` begins selection / visual mode
+    - `C-v` toggles between blockwise visual mode and visual mode
+    - `H` jumps to the start of line
+    - `L` jumps to the end of line
+    - `y` copies the selection to the top paste-buffer
+    - `Escape` cancels the current operation
 
 ## Window/pane surgery
 
@@ -109,6 +127,7 @@ Features comes from [install gpakosz tmux configuration](https://github.com/gpak
 Resources:
 
 * [cheat sheet](http://cheat.errtheblog.com/s/tmux/)
+* [tmux cheat] (https://tmuxcheatsheet.com/?q=&hPP=100&idx=tmux_cheats&p=0&is_v=1)
 
 Notes:
 
