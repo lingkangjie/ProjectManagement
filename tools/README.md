@@ -127,7 +127,7 @@ Features comes from [install gpakosz tmux configuration](https://github.com/gpak
 Resources:
 
 * [cheat sheet](http://cheat.errtheblog.com/s/tmux/)
-* [tmux cheat] (https://tmuxcheatsheet.com/?q=&hPP=100&idx=tmux_cheats&p=0&is_v=1)
+* [tmux cheat](https://tmuxcheatsheet.com/?q=&hPP=100&idx=tmux_cheats&p=0&is_v=1)
 
 Notes:
 

@@ -59,50 +59,64 @@ $ info scope main
 ```
 If we want to check there are how many and which scope we interested in, using <TAB> to list: $ info scope <TAB>
 
-- rip debug symbols off a binary
+- rip debug symbols off a binary  
 Method 1: The debug symbols have just been copied, they have not been stripped from the binary. As in some binaries, the debug symbols are bigger than the binary executable themself, it is convenient for us to strip debug symbols from binary.
 ```console
 objcopy --only-keep-debug Add_Sub_DEBUG DEBUG_symbols
 ```
 
-Method 2: enter the gdb deubg environment, using
+Method 2: enter the gdb deubg environment, using  
+```
 (gdb) maint print symbols DEBUG_symbols_2
 (gdb) shell ls
 Add_Sub.c  Add_Sub_DEBUG  Add_Sub_NO_DEBUG  DEBUG_symbols  DEBUG_symbols_2
 (gdb)
+```
 
-- Stripping symbols off a binary
+- Stripping symbols off a binary  
+```
 $ strip --strip-debug binary_file
 $ (gdb) info functions
 Still some variables can be seen.
 In order to further remove them use --strip-unneeded option
 $ strip --strip-debug --strip-unneeded Add_Sub_DEBUG_stripped
+```
 
-- Inspecting Symbols witm NM
+- Inspecting Symbols witm NM  
+```
 $ nm ./executable_file
 
 output e.g.: 
 ......
 0804a034 B IamAGlobalVariable
 ......
-
-- Grep for function names
+```
+- Grep for function names  
+```
 $ nm ./executable_file | grep function_name
 $ nm ./executable_file | grep 'B'  
+```
 
 - In sorted order
+```
 $ nm -n ./executable_file
+```
 
 - List external symbols
+```
 $ nm -g ./executable_file
+```
 
 - Display size
+```
 $ nm -S ./executable_file
-
-- Trace system calls
-Using strace to traces all system calls a program does, don't even need source code.
+```
+- Trace system calls  
+Using strace to traces all system calls a program does, don't even need source code.  
+```
 $ strace ./executable_file argv1(for executable_file)  argv2(for executable_file) ...
 e.g $ strace ./Add_Sub_change 20 30
+```
 
 - check registers, break points, menmory
 ```console

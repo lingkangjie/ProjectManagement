@@ -1,4 +1,5 @@
 /* $ gcc -pthread thread_mutex.c
+ * 
  * 1. Mutexes can be applied only to threads in a single process, and do not 
  *    work between processes as do semaphores.
  * 2. When a mutex lock is attempted against a mutex which is held by another
@@ -9,9 +10,9 @@
  * pthread_mutex_lock() - acquire a lock on the specified mutex variable. If 
  *    the mutex is already locked by another thread, this call will block the 
  *    calling thread until the mutex is unlocked.
- *    pthread_mutex_unlock() - unlock a mutex variable. An error is returned if 
- * mutex is already unlocked or owned by another thread.
- *    pthread_mutex_trylock() - attempt to lock a mutex or will return error code 
+ * pthread_mutex_unlock() - unlock a mutex variable. An error is returned if 
+ *    mutex is already unlocked or owned by another thread.
+ * pthread_mutex_trylock() - attempt to lock a mutex or will return error code 
  *    if busy. Useful for preventing deadlock conditions.
  *
  */
