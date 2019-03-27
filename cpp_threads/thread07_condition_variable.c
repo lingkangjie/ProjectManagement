@@ -57,7 +57,7 @@
 * 
 * Here is a boss/worker model, the boss is Watch_count(), and the worker is
 * inc_count(). The workers are just woking, and when variable count reach to
-* 12, an signal will be sent to boss to update count ( 12 + 125 = 137). When
+* 12, a signal will be sent to boss to update count ( 12 + 125 = 137). When
 * the boss works done, two works begin to work again.
 *
 * SOURCE: Adapted from example code in "Pthreads Programming", B. Nichols
