@@ -16,4 +16,4 @@
 - If main() finishes first, without calling pthread_exit explicitly itself
 
 ## Examples
-Each example is self-contained, details and explanations please reference the file respectively.
+Each example is self-contained, details and explanations please reference each file respectively.
