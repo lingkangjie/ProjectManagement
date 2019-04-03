@@ -46,4 +46,5 @@ foreach(key
   cmake_host_system_information(RESULT _${key} QUERY ${key})
 endforeach()
 
+# config.h will be generated from config.h.in
 configure_file(config.h.in config.h @ONLY)

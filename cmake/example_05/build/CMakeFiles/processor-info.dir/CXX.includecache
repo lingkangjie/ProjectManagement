@@ -1,0 +1,18 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/lkj/ProjectManagement/cmake/example_05/processor-info.cpp
+config.h
+/home/lkj/ProjectManagement/cmake/example_05/config.h
+cstdlib
+-
+iostream
+-
+
+config.h
+

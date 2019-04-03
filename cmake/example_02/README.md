@@ -8,7 +8,7 @@ $ cmake --build .
 ```
 Use `--VERBOSE=1` to see building details, especially in complex building process  
 ```
-$ cmake --build . --VERBOSE=1
+$ cmake --build . -- VERBOSE=1
 ```
 
 ## the files Cmake generates
