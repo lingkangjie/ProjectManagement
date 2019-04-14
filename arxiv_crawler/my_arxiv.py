@@ -1,25 +1,26 @@
 """
-https://arxiv.org/help/api/user-manual
-https://www.v2ex.com/t/311247
-https://beautifulsoup.readthedocs.io/zh_CN/v4.4.0/
-https://www.dataquest.io/blog/web-scraping-tutorial-python/
-https://www.crummy.com/software/BeautifulSoup/bs4/doc/
+Reference:
+    https://github.com/joelthchao/arxiv-crawler
+    https://arxiv.org/help/api/user-manual
+    https://www.crummy.com/software/BeautifulSoup/bs4/doc/
+    https://github.com/csurfer/rake-nltk
 Usages: 
-# import sqlite3
-# conn = sqlite3.connect('arxiv_raw.sqlite')
-# cur = conne.cursor()
-# cur.execute('SELECT * FROM sqlite_master')
-# print(cur.fetchall()) # print the information for all tables
+    In python:
+    # import sqlite3
+    # conn = sqlite3.connect('arxiv_raw.sqlite')
+    # cur = conn.cursor()
+    # cur.execute('SELECT * FROM sqlite_master')
+    # print(cur.fetchall()) # print the information for all tables
 
-In terminal:
-$ sqlite3 arxiv_raw.sqlite
-$ sqlite>.header on
-$ sqlite>.mode column
-$ sqlite>SELECT tbl_name FROM sqlite_master WHERE type='table'; // check tables name
-$ sqlite>SELECT * FROM sqlite_master
-$ sqlite>SELECT * FROM Papers
-$ sqlite>SELECT * FROM Authors
-$ sqlite>SELECT * FROM Publications
+    In terminal:
+    $ sqlite3 arxiv_raw.sqlite
+    $ sqlite>.header on
+    $ sqlite>.mode column
+    $ sqlite>SELECT tbl_name FROM sqlite_master WHERE type='table'; // check tables name
+    $ sqlite>SELECT * FROM sqlite_master
+    $ sqlite>SELECT * FROM Papers
+    $ sqlite>SELECT * FROM Authors
+    $ sqlite>SELECT * FROM Publications
 
 """
 
@@ -30,7 +31,16 @@ import pickle
 import os
 import sys
 import sqlite3
+import nltk
+from nltk import FreqDist
+from nltk.tokenize import RegexpTokenizer
+
+import matplotlib.pyplot as plt
+
+from rake import Rake
+
 sys.setrecursionlimit(10000)
+
 def base_search(query_url):
 
     response = urllib.request.urlopen(query_url).read()
@@ -100,13 +110,6 @@ def base_search(query_url):
         print("number of authors and id mismatch")
 
     return [titles,IDs,published,updated,summary,authors,category]
-    #print(titles)
-    #print(IDs)
-    #print(published)
-    #print(updated)
-    ##print(summary)
-    #print(authors)
-    #print(category)
     
 def search_arxiv():
 
@@ -117,7 +120,7 @@ def search_arxiv():
     search_query = 'all:machine learning' # search for electron in all fields
     start = 0 # start at the first result
     total_results = 9# want 20 total results
-    results_per_iteration = 3 # 5 results at a time
+    Vresults_per_iteration = 3 # 5 results at a time
     wait_time = 60 # number of seconds to wait beetween calls
 
     print('Searching arXiv for %s' % search_query)
@@ -245,22 +248,135 @@ def save_DB(fields,year,month,titles,authors,IDs):
                 (paper_id, author_id) VALUES (?, ?)''', (paper_id, author_id))
     conn.commit()
 
+def paper_title_NLP(title_corpus):
+
+    # title_corpus is a list of tuple
+    # keys like (19,1), means 2019/01
+    # value is a list of paper titles after tokenized
+    # referece: https://stackoverflow.com/questions/36353125/nltk-regular-expression-tokenizer
+    title_dict = {}
+    pattern = r'''(?x)            # set flag to allow verbose regexps
+            (?:[A-Z]\.)+          # abbreviations, e.g. U.S.A.
+            | \w+(?:-\w+)*        # words with optional internal hyphens
+            | \$?\d+(?:\.\d+)?%?  # currency and percentages, e.g. $12.40, 82%
+            | \.\.\.              # ellipsis
+            | [][.,;"'?():_`-]    # these are separate tokens; includes ], [
+            '''
+    tokenizer = RegexpTokenizer(pattern)
+    for t in title_corpus:
+        key = (t[3],t[4])
+        if key in title_dict:
+            filterdText = tokenizer.tokenize(t[1])
+            title_dict[key].append(filterdText) 
+        else:
+            title_dict[key] = []
+            filterdText = tokenizer.tokenize(t[1])
+            title_dict[key].append(filterdText) 
+
+    # extract keywords with year span
+    title_years = {}
+    for k,v in title_dict.items():
+        key = (k[0],) # year index
+        if key in title_years.keys():
+            title_years[key].append(v)
+        else:
+            title_years[key] = []
+            title_years[key].append(v)
+
+
+    deep_freq = []
+    for k,v in title_years.items():
+        fd = FreqDist()
+        vs = [item for sublist in v for item in sublist]
+        for v_ in vs:
+            for word in v_:
+                fd[word] += 1
+
+        print('The keywords for year:20{}'.format(str(k[0])))
+        print("Total number of words:{}".format(str(fd.N()))) # total number of samples
+        print("Total number of unique words:{}".format(str(fd.B()))) # number of bins or unique samples
+        fd.pprint(50) # The maximum number of items to display, default is 10
+        deep_freq.append(fd.freq('Deep')+fd.freq('deep'))
+        print(deep_freq)
+
+    plt.plot([2012,2013,2014,2015,2016,2017,2018],deep_freq)
+    plt.ylabel('frequency of deep word')
+    plt.xlabel('years')
+    plt.show()
+
+def keyword_title(title_corpus):
+
+    ## here we need NLTK stopwords and punkt, will storaged in /usr/share/nltk_data
+    # uncomment to download 
+
+    #nltk.download('stopwords')
+    nltk.download('punkt')
+
+    title_dict = {}
+    for t in title_corpus:
+        key = (t[3],t[4])
+        if key in title_dict:
+            title_dict[key].append(t[1]) 
+        else:
+            title_dict[key] = []
+            title_dict[key].append(t[1]) 
+
+    # extract keywords with year span
+    title_years = {}
+    for k,v in title_dict.items():
+        key = (k[0],) # year index
+        if key in title_years.keys():
+            title_years[key].append(v)
+        else:
+            title_years[key] = []
+            title_years[key].append(v)
+
+    for k,v in title_years.items():
+        r = Rake()
+        vs = [item.rstrip('\n') for sublist in v for item in sublist]
+        # a list of strings where each string is a sentence
+        #r.extract_keywords_from_sentences(vs)
+        #print('The keywords for year:{}'.format(str(k[0])))
+        #print(r.get_ranked_phrases_with_scores()[0:10])
+
+        title_txt = '''.'''.join(vs)
+        title_txt.strip('\n')
+        r.extract_keywords_from_text(title_txt)
+        print('The keywords for year:{}'.format(str(k[0])))
+        # to get keyword phrases ranked from hightest to lowest with scores
+        print(r.get_ranked_phrases_with_scores()[0:10])
+
 if __name__ == '__main__':
 
     #results = search_query()
 
-    fields = 'CV'
-    months = ['{:0>2d}'.format(i+1) for i in range(4)]
-    years = ['{:0>2d}'.format(i) for i in range(19, 20)]
-    #month = '04'
-    #year = '19'
+    if os.path.isfile('./arxiv_raw_CV_201201_201812.sqlite'):
+        print('The database of arxiv has exists')
+    else:
+        # cs.CV, cs.AI
+        fields = 'AI'
+        months = ['{:0>2d}'.format(i+1) for i in range(12)]
+        years = ['{:0>2d}'.format(i) for i in range(12, 19)]
+        #month = '04'
+        #year = '19'
 
-    wait_time = 60 # number of seconds to wait beetween calls
+        wait_time = 10 # number of seconds to wait beetween calls
 
-    for year in years:
-        for month in months:
-            print("loading {}-{}".format(year,month)) 
-            (titles,authors,IDs) = lasted_arxiv(fields,year,month)
-            save_DB(fields, year, month, titles, authors, IDs)
-            print("save to DB done")
-            time.sleep(wait_time)
+        for year in years:
+            for month in months:
+                print("loading {}-{}".format(year,month)) 
+                (titles,authors,IDs) = lasted_arxiv(fields,year,month)
+                save_DB(fields, year, month, titles, authors, IDs)
+                print("save to DB done")
+                time.sleep(wait_time)
+
+    # NLP for arxiv data
+    print('NLP for arxiv begin...')
+    conn = sqlite3.connect('./arxiv_raw_CV_201201_201812.sqlite')
+    cur = conn.cursor()
+    cur.execute('SELECT * FROM Papers')
+    Papers = cur.fetchall()
+    paper_title_NLP(Papers) # base statistics for paper titles
+    keyword_title(Papers) # keyword extraction for paper titles
+    print('NLP for arxiv end')
+
