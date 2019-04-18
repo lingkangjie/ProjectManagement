@@ -11,6 +11,14 @@ $ git clone https://github.com/gpakosz/.tmux.git
 $ ln -s -f .tmux/.tmux.conf
 $ cp .tmux/.tmux.conf.local .
 ```
+If you want to use `Ctrl + a` in vim, not in tmux, please command two lines in:  
+```
+$ vim ~/.tmux.conf
+#set -g prefix2 C-a                        # GNU-Screen compatible prefix
+#bind C-a send-prefix -2
+```
+  
+
 ## tmux setting to enable vim
 ```console
 set -g status-keys vi
